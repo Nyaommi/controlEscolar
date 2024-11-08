@@ -1,5 +1,6 @@
 import mysql.connector
 import bcrypt
+import administrador
 
 user = 'root'
 password = 'cinna123'
@@ -49,3 +50,16 @@ def login(userType, mail, password):
       return False
   else:
     return('noUser')
+  
+def searchAdmin(id):
+  conn = open()
+  cursor1 = conn.cursor()
+  sql = 'select * from administradores where id = %s;'
+  cursor1.execute(sql, (id,))
+  row = cursor1.fetchone()
+  conn.close()
+  if row:
+    aux = administrador.Administrador(row[0],row[1],row[2],row[3],row[4],row[5],row[6])
+    return aux
+  else:
+    return None
