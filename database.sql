@@ -32,7 +32,7 @@ CREATE TABLE `administradores` (
   `apellidoMaterno` varchar(100) DEFAULT NULL,
   `mail` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,6 +41,10 @@ CREATE TABLE `administradores` (
 
 LOCK TABLES `administradores` WRITE;
 /*!40000 ALTER TABLE `administradores` DISABLE KEYS */;
+INSERT INTO `administradores` VALUES
+(1,'naokko','$2b$12$EqsyiV6O.TkgQSWDfjjZNe8QWfoTfxveZ16Zcippd9Pw0YX9uCyRm','Riquelme','Escalante','Maldonado','chees3.burgirl@gmail.com'),
+(2,'karenmoroll','$2b$12$QXKjO5tnD111L0vBw6UXouZYucd97AmqzGGI1Ften0L1gcII5YfkO','Karen','Escalante','Ibarra','karen555@gmail.com'),
+(5,'val','$2b$12$hV1AWvUK98dvPMz/66.P/OsenJVdxVE6OI7T0lPP3kjYqcLkS50ti','Valeria','Escalante','Maldonado','vale@gmail.com');
 /*!40000 ALTER TABLE `administradores` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -59,10 +63,12 @@ CREATE TABLE `alumnos` (
   `mail` varchar(100) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `idCarrera` int(11) DEFAULT NULL,
+  `fechaNacimiento` date DEFAULT NULL,
+  `estado` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idCarrera` (`idCarrera`),
   CONSTRAINT `alumnos_ibfk_1` FOREIGN KEY (`idCarrera`) REFERENCES `carreras` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,6 +77,9 @@ CREATE TABLE `alumnos` (
 
 LOCK TABLES `alumnos` WRITE;
 /*!40000 ALTER TABLE `alumnos` DISABLE KEYS */;
+INSERT INTO `alumnos` VALUES
+(1,'Armando','Maradona','Maldonado','diegoE@gmail.com','$2b$12$0c2zwv5XO3DJ4KoCH9QFlO/oydLRwyi8nJQS/cQyH4I5.FSppRyTa',1,'0002-02-07','Baja temporal'),
+(3,'Miguel','Sandoval','Arandula','miguelS@gamil.com','$2b$12$aV2489aFkspVQUTwDpwmweQDd..u6i.oUOaauxNbxdoJChzJp2Kna',1,'1996-11-22','Regular');
 /*!40000 ALTER TABLE `alumnos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -110,9 +119,9 @@ DROP TABLE IF EXISTS `carreras`;
 CREATE TABLE `carreras` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) DEFAULT NULL,
-  `semestre` int(11) DEFAULT NULL,
+  `semestres` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,6 +130,8 @@ CREATE TABLE `carreras` (
 
 LOCK TABLES `carreras` WRITE;
 /*!40000 ALTER TABLE `carreras` DISABLE KEYS */;
+INSERT INTO `carreras` VALUES
+(1,'Ingenieria en informatica',8);
 /*!40000 ALTER TABLE `carreras` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -210,7 +221,7 @@ CREATE TABLE `maestros` (
   PRIMARY KEY (`id`),
   KEY `idCarrera` (`idCarrera`),
   CONSTRAINT `maestros_ibfk_1` FOREIGN KEY (`idCarrera`) REFERENCES `carreras` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -219,6 +230,8 @@ CREATE TABLE `maestros` (
 
 LOCK TABLES `maestros` WRITE;
 /*!40000 ALTER TABLE `maestros` DISABLE KEYS */;
+INSERT INTO `maestros` VALUES
+(1,'Angel','Chavarin','Lopez','1997-11-28','Doctorado','joseC@udeg.com','$2b$12$SYouTyXLI2DOyKVxrFCBW.qUnXR8s6Et8qp4IcXf6Qe56WJ07fF.O',1);
 /*!40000 ALTER TABLE `maestros` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -309,4 +322,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2024-11-07 14:10:19
+-- Dump completed on 2024-11-11 21:27:10
