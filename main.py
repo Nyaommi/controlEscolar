@@ -4,8 +4,10 @@ from tkinter import ttk
 from tkinter import messagebox
 
 import database
-import administrador
-import frames.coordinador.frameCoordinadores as FC
+import clases.administrador as administrador
+import frames.coordinador.frameCoordinadores as FCC
+import frames.coordinador.frameAlumnos as FCA
+import frames.coordinador.frameMaestros as FCM
 
 class App(tk.Tk):
   def __init__(self):
@@ -13,7 +15,6 @@ class App(tk.Tk):
     self.title('Login')
     self.geometry('500x350')
     self.currentUser = None
-
     self.menuAdmin()
 
   def menuLogin(self):
@@ -79,9 +80,9 @@ class App(tk.Tk):
     nb = ttk.Notebook(self)
     nb.pack(fill='both', expand='yes')
 
-    frameCoordinadores = FC.FrameCoordinador(nb)
-    frameAlumnos = ttk.Frame(nb)
-    frameMaestros = ttk.Frame(nb)
+    frameCoordinadores = FCC.FrameCoordinador(nb)
+    frameAlumnos = FCA.FrameAlumnos(nb)
+    frameMaestros = FCM.FrameMaestros(nb)
     frameMaterias = ttk.Frame(nb)
     frameGrupos = ttk.Frame(nb)
     frameHorarios = ttk.Frame(nb)

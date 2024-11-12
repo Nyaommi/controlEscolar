@@ -12,7 +12,7 @@ class Administrador:
     return self.__id
   def getUsuario(self):
     return self.__usuario
-  def getpassword(self):
+  def getPassword(self):
     return self.__password
   def getNombre(self):
     return self.__nombre

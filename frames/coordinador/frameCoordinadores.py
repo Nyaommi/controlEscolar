@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import database
-import administrador
+import clases.administrador as administrador
 
 def FrameCoordinador(nb):
   frameCoordinadores = ttk.Frame(nb)
@@ -28,11 +28,11 @@ def FrameCoordinador(nb):
   entryPassword1 = ttk.Entry(frameCoordinadores, show='*', state='readonly')
 
   buttonBuscar1 = ttk.Button(frameCoordinadores, text='Buscar', command=lambda:buscar(entryBusqueda1.get()))
-  buttonNuevo1 = ttk.Button(frameCoordinadores, text='Nuevo')
-  buttonGuardar1 = ttk.Button(frameCoordinadores, text='Guardar')
-  buttonCancelar1 = ttk.Button(frameCoordinadores, text='Cancelar')
-  buttonEditar1 = ttk.Button(frameCoordinadores, text='Editar')
-  buttonBaja1 = ttk.Button(frameCoordinadores, text='Baja')
+  buttonNuevo1 = ttk.Button(frameCoordinadores, text='Nuevo', command=lambda:nuevo())
+  buttonGuardar1 = ttk.Button(frameCoordinadores, text='Guardar', state="disabled", command=lambda:guardar())
+  buttonCancelar1 = ttk.Button(frameCoordinadores, text='Cancelar', state="disabled", command=lambda:cancelar())
+  buttonEditar1 = ttk.Button(frameCoordinadores, text='Editar', state="disabled", command=lambda:editar())
+  buttonBaja1 = ttk.Button(frameCoordinadores, text='Baja', state="disabled", command=lambda:baja())
 
   #-Commands-
   def buscar(id):
@@ -67,6 +67,109 @@ def FrameCoordinador(nb):
       entryPassword1.config(state=NORMAL)
       entryPassword1.delete(0, tk.END)
       entryPassword1.config(state='readonly')
+
+      buttonNuevo1.config(state=NORMAL)
+      buttonGuardar1.config(state='disabled')
+      buttonCancelar1.config(state=NORMAL)
+      buttonEditar1.config(state=NORMAL)
+      buttonBaja1.config(state=NORMAL)
+
+  def nuevo():
+    entryID1.config(state=NORMAL)
+    entryID1.delete(0, tk.END)
+    entryID1.insert(0, str(database.getCountAdmin()))
+    entryID1.config(state='readonly')
+    entryNombre1.config(state=NORMAL)
+    entryNombre1.delete(0, tk.END)
+    entryPaterno1.config(state=NORMAL)
+    entryPaterno1.delete(0, tk.END)
+    entryMaterno1.config(state=NORMAL)
+    entryMaterno1.delete(0, tk.END)
+    entryMail1.config(state=NORMAL)
+    entryMail1.delete(0, tk.END)
+    entryUsuario1.config(state=NORMAL)
+    entryUsuario1.delete(0, tk.END)
+    entryPassword1.config(state=NORMAL)
+    entryPassword1.delete(0, tk.END)
+
+    buttonNuevo1.config(state='disabled')
+    buttonGuardar1.config(state=NORMAL)
+    buttonCancelar1.config(state=NORMAL)
+    buttonEditar1.config(state='disabled')
+    buttonBaja1.config(state='disabled')
+
+  def cancelar():
+    entryID1.config(state=NORMAL)
+    entryID1.delete(0, tk.END)
+    entryID1.config(state='readonly')
+    entryNombre1.config(state=NORMAL)
+    entryNombre1.delete(0, tk.END)
+    entryNombre1.config(state='readonly')
+    entryPaterno1.config(state=NORMAL)
+    entryPaterno1.delete(0, tk.END)
+    entryPaterno1.config(state='readonly')
+    entryMaterno1.config(state=NORMAL)
+    entryMaterno1.delete(0, tk.END)
+    entryMaterno1.config(state='readonly')
+    entryMail1.config(state=NORMAL)
+    entryMail1.delete(0, tk.END)
+    entryMail1.config(state='readonly')
+    entryUsuario1.config(state=NORMAL)
+    entryUsuario1.delete(0, tk.END)
+    entryUsuario1.config(state='readonly')
+    entryPassword1.config(state=NORMAL)
+    entryPassword1.delete(0, tk.END)
+    entryPassword1.config(state='readonly')
+
+    buttonNuevo1.config(state=NORMAL)
+    buttonGuardar1.config(state='disabled')
+    buttonCancelar1.config(state='disabled')
+    buttonEditar1.config(state='disabled')
+    buttonBaja1.config(state='disabled')
+  
+  def guardar():
+    if database.checkAdmin(entryID1.get()):
+      if all (field != '' for field in (entryUsuario1.get(), entryNombre1.get(), entryPaterno1.get(), entryMaterno1.get(), entryMail1.get())):
+        admin = administrador.Administrador(entryID1.get(), entryUsuario1.get(), '', entryNombre1.get(), entryPaterno1.get(), entryMaterno1.get(), entryMail1.get())
+        if database.updateAdmin(admin):
+          messagebox.showinfo('Usuario actualizado', f'Los datos del usuario con el ID: {admin.getId()} han sido actualizados')
+          cancelar()
+        else:
+          print('Error')
+      else:
+        messagebox.showwarning('Campos incompletos', 'Por favor llene todos los campos')
+    else:
+      if all (field != '' for field in (entryUsuario1.get(), entryPassword1.get(), entryNombre1.get(), entryPaterno1.get(), entryMaterno1.get(), entryMail1.get())):
+        admin = administrador.Administrador(entryID1.get(), entryUsuario1.get(), entryPassword1.get(), entryNombre1.get(), entryPaterno1.get(), entryMaterno1.get(), entryMail1.get())
+        if database.createAdmin(admin):
+          messagebox.showinfo('Usuario registrado', f'Se ha registrado a {admin.getNombre()} con el ID: {admin.getId()}')
+          cancelar()
+        else:
+          print('Error')
+        
+      else:
+        messagebox.showwarning('Campos incompletos', 'Por favor llene todos los campos')
+  
+  def editar():
+    entryNombre1.config(state=NORMAL)
+    entryPaterno1.config(state=NORMAL)
+    entryMaterno1.config(state=NORMAL)
+    entryMail1.config(state=NORMAL)
+    entryUsuario1.config(state=NORMAL)
+    entryPassword1.config(state='disabled')
+
+    buttonNuevo1.config(state='disabled')
+    buttonGuardar1.config(state=NORMAL)
+    buttonCancelar1.config(state=NORMAL)
+    buttonEditar1.config(state='disabled')
+    buttonBaja1.config(state='disabled')
+
+  def baja():
+    option = messagebox.askyesno('Baja de usuario',f'Está a punto de de dar de baja al usuario con el ID {entryID1.get()}\nDesea continuar?')
+
+    if option:
+      database.deleteAdmin(entryID1.get())
+      cancelar()
 
   labelBusqueda1.grid(row=0, column=1, sticky=E)
   entryBusqueda1.grid(row=0, column=2, sticky=W+E)
