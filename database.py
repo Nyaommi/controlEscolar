@@ -1,327 +1,325 @@
-import mysql.connector
-import bcrypt
-import clases.administrador as administrador
-import clases.alumno as alumno
-import clases.maestro as maestro
-from tkinter import messagebox
-import re
+/*M!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19-11.5.2-MariaDB, for Win64 (AMD64)
+--
+-- Host: localhost    Database: controlescolar
+-- ------------------------------------------------------
+-- Server version	11.5.2-MariaDB
 
-user = 'root'
-password = 'cinna123'
-database = 'controlescolar'
-host = 'localhost' #it's all in localhost cause it's a shcollar proyect... but we could do it in a web server...
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
-def passwordCheck(password):
-  pattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$'
-  return bool(re.fullmatch(pattern, password))
+--
+-- Table structure for table `administradores`
+--
 
-def hashPassword(password):
-  salt = bcrypt.gensalt()
-  hashed_password = bcrypt.hashpw(password.encode(), salt)
-  return hashed_password
+DROP TABLE IF EXISTS `administradores`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `administradores` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario` varchar(100) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `nombre` varchar(100) DEFAULT NULL,
+  `apellidoPaterno` varchar(100) DEFAULT NULL,
+  `apellidoMaterno` varchar(100) DEFAULT NULL,
+  `mail` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-def verifyPassword(password, hashedPassword):
-  if isinstance(password, str):
-      password = password.encode() 
-  if isinstance(hashedPassword, str):
-      hashedPassword = hashedPassword.encode()
-  return bcrypt.checkpw(password, hashedPassword)
+--
+-- Dumping data for table `administradores`
+--
 
-def open():
-  conn = mysql.connector.connect(host = host, user = user, passwd = password, database = database)
-  return conn
+LOCK TABLES `administradores` WRITE;
+/*!40000 ALTER TABLE `administradores` DISABLE KEYS */;
+INSERT INTO `administradores` VALUES
+(1,'naokko','$2b$12$EqsyiV6O.TkgQSWDfjjZNe8QWfoTfxveZ16Zcippd9Pw0YX9uCyRm','Riquelme','Escalante','Maldonado','chees3.burgirl@gmail.com'),
+(2,'karenmoroll','$2b$12$QXKjO5tnD111L0vBw6UXouZYucd97AmqzGGI1Ften0L1gcII5YfkO','Karen','Escalante','Ibarra','karen555@gmail.com'),
+(5,'val','$2b$12$hV1AWvUK98dvPMz/66.P/OsenJVdxVE6OI7T0lPP3kjYqcLkS50ti','Valeria','Escalante','Maldonado','vale@gmail.com');
+/*!40000 ALTER TABLE `administradores` ENABLE KEYS */;
+UNLOCK TABLES;
 
-def close():
-  conn = open()
-  conn.close()
+--
+-- Table structure for table `alumnos`
+--
 
-def login(userType, mail, password):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select * from '+userType+' where mail = %s;'
-    cursor1.execute(sql, (mail,))
-    row = cursor1.fetchone()
-    conn.close()
-    if row:
-      if verifyPassword(password, row[2]):
-        return True
-      else:
-        return False
-    else:
-      return('noUser')
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+DROP TABLE IF EXISTS `alumnos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `alumnos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  `apellidoPaterno` varchar(100) DEFAULT NULL,
+  `apellidoMaterno` varchar(100) DEFAULT NULL,
+  `mail` varchar(100) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `idCarrera` int(11) DEFAULT NULL,
+  `fechaNacimiento` date DEFAULT NULL,
+  `estado` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idCarrera` (`idCarrera`),
+  CONSTRAINT `alumnos_ibfk_1` FOREIGN KEY (`idCarrera`) REFERENCES `carreras` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-def carreraName(id):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select nombre from carreras where id = %s;'
-    cursor1.execute(sql,(id,))
-    carrera = cursor1.fetchone()
-    conn.close()
-    return carrera[0]
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+--
+-- Dumping data for table `alumnos`
+--
 
-def carreraList():
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select id, nombre from carreras;'
-    cursor1.execute(sql)
-    carreras = cursor1.fetchall()
-    conn.close()
-    carrerasN = [carrera[1] for carrera in carreras]
-    carrerasI = [carrera[0] for carrera in carreras]
-    return carrerasI, carrerasN
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+LOCK TABLES `alumnos` WRITE;
+/*!40000 ALTER TABLE `alumnos` DISABLE KEYS */;
+INSERT INTO `alumnos` VALUES
+(1,'Armando','Maradona','Maldonado','diegoE@gmail.com','$2b$12$0c2zwv5XO3DJ4KoCH9QFlO/oydLRwyi8nJQS/cQyH4I5.FSppRyTa',1,'0002-02-07','Baja temporal'),
+(3,'Miguel','Sandoval','Arandula','miguelS@gamil.com','$2b$12$aV2489aFkspVQUTwDpwmweQDd..u6i.oUOaauxNbxdoJChzJp2Kna',1,'1996-11-22','Regular');
+/*!40000 ALTER TABLE `alumnos` ENABLE KEYS */;
+UNLOCK TABLES;
 
-#- Admin Function -
-  
-def searchAdmin(id):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select * from administradores where id = %s;'
-    cursor1.execute(sql, (id,))
-    row = cursor1.fetchone()
-    conn.close()
-    if row:
-      aux = administrador.Administrador(row[0],row[1],row[2],row[3],row[4],row[5],row[6])
-      return aux
-    else:
-      return None
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
-  
-def getCountAdmin():
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select auto_increment from information_schema.tables where table_name = \'administradores\' and table_schema = \'controlescolar\';'
-    cursor1.execute(sql)
-    total = cursor1.fetchone()
-    conn.close()
-    return total[0]
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+--
+-- Table structure for table `alumnosmaterias`
+--
 
-def checkAdmin(id):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select * from administradores where id = %s;'
-    cursor1.execute(sql,(id,))
-    row = cursor1.fetchone()
-    conn.close()
-    return bool(row)
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+DROP TABLE IF EXISTS `alumnosmaterias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `alumnosmaterias` (
+  `idAlumnos` int(11) NOT NULL,
+  `idMaterias` int(11) NOT NULL,
+  PRIMARY KEY (`idAlumnos`,`idMaterias`),
+  KEY `idMaterias` (`idMaterias`),
+  CONSTRAINT `alumnosmaterias_ibfk_1` FOREIGN KEY (`idAlumnos`) REFERENCES `alumnos` (`id`),
+  CONSTRAINT `alumnosmaterias_ibfk_2` FOREIGN KEY (`idMaterias`) REFERENCES `materias` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-def updateAdmin(admin):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'update administradores set usuario = %s, nombre = %s, apellidoPaterno = %s, apellidoMaterno = %s, mail = %s where id = %s;'
-    cursor1.execute(sql,(admin.getUsuario(),admin.getNombre(),admin.getAPaterno(), admin.getAMaterno(), admin.getMail(), admin.getId()))
-    conn.commit()
-    conn.close()
-    return True
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
-    return False
-  
-def createAdmin(admin):
-  if passwordCheck(admin.getPassword()):
-    try:
-      conn = open()
-      cursor1 = conn.cursor()
-      sql = 'insert into administradores(usuario, password, nombre, apellidoPaterno, apellidoMaterno, mail) values(%s,%s,%s,%s,%s,%s);'
-      cursor1.execute(sql,(admin.getUsuario(),hashPassword(admin.getPassword()),admin.getNombre(),admin.getAPaterno(), admin.getAMaterno(), admin.getMail()))
-      conn.commit()
-      conn.close()
-      return True
-    except Exception as e:
-      messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
-      return False
-  else:
-    messagebox.showerror('Contrasena no valida', 'Porfavor introduzca un contrasena que cumpla con:\n-Minimo 6 caracteres\n-Minimo una mayuscula\n-Minimo un numero\n-Minimo un simbolo especial')
-  
-def deleteAdmin(id):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'delete from administradores where id = %s;'
-    cursor1.execute(sql,(id,))
-    conn.commit()
-    conn.close()
-    messagebox.showinfo('Usuario eliminado', f'El usuario con el id {id} ha sido eliminado de la base de datos')
-  except Exception as e:
-    messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
-  
-#- Student Functions -\
-def searchStudent(id):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select * from alumnos where id = %s;'
-    cursor1.execute(sql, (id,))
-    row = cursor1.fetchone()
-    conn.close()
-    if row:
-      aux = alumno.Alumno(row[0],row[1],row[2],row[3],row[4],row[8],row[7],carreraName(row[6]), [])
-      return aux
-    else:
-      return None
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+--
+-- Dumping data for table `alumnosmaterias`
+--
 
-def getCountStudent():
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select auto_increment from information_schema.tables where table_name = \'alumnos\' and table_schema = \'controlescolar\';'
-    cursor1.execute(sql)
-    total = cursor1.fetchone()
-    conn.close()
-    return total[0]
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+LOCK TABLES `alumnosmaterias` WRITE;
+/*!40000 ALTER TABLE `alumnosmaterias` DISABLE KEYS */;
+/*!40000 ALTER TABLE `alumnosmaterias` ENABLE KEYS */;
+UNLOCK TABLES;
 
-def checkStudent(id):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select * from alumnos where id = %s;'
-    cursor1.execute(sql,(id,))
-    row = cursor1.fetchone()
-    conn.close()
-    return bool(row)
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+--
+-- Table structure for table `carreras`
+--
 
-def updateStudent(student, idCarrera):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'update alumnos set nombre = %s, apellidoPaterno = %s, apellidoMaterno = %s, mail = %s, idCarrera = %s, fechaNacimiento = str_to_date(%s, \'%m/'+'%'+'d/%y\'), estado = %s where id = %s;'
-    cursor1.execute(sql,(student.getNombre(),student.getAPaterno(), student.getAMaterno(), student.getMail(), idCarrera, student.getFechaNacimiento(), student.getEstado(), student.getId()))
-    conn.commit()
-    conn.close()
-    return True
-  except Exception as e:
-    messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
-    return False
-  
-def createStudent(student, password, idCarrera):
-  if passwordCheck(password):
-    try:
-      conn = open()
-      cursor1 = conn.cursor()
-      sql = 'insert into alumnos(nombre, apellidoPaterno, apellidoMaterno, mail, password, idCarrera, fechaNacimiento, estado) values(%s,%s,%s,%s,%s,%s,str_to_date(%s, \'%m/'+'%'+'d/%y\'),%s);'
-      cursor1.execute(sql,(student.getNombre(),student.getAPaterno(), student.getAMaterno(), student.getMail(), hashPassword(password), idCarrera, student.getFechaNacimiento(), student.getEstado()))
-      conn.commit()
-      conn.close()
-      return True
-    except Exception as e:
-      messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
-      return False
-  else:
-    messagebox.showerror('Contrasena no valida', 'Porfavor introduzca un contrasena que cumpla con:\n-Minimo 6 caracteres\n-Minimo una mayuscula\n-Minimo un numero\n-Minimo un simbolo especial')
-  
-def deleteStudent(id):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'delete from alumnos where id = %s;'
-    cursor1.execute(sql,(id,))
-    conn.commit()
-    conn.close()
-    messagebox.showinfo('Alumno eliminado', f'El alumno con el id {id} ha sido eliminado de la base de datos')
-  except Exception as e:
-    messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+DROP TABLE IF EXISTS `carreras`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `carreras` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  `semestres` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-#- Teachers Functions -\
-def searchTeacher(id):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select * from maestros where id = %s;'
-    cursor1.execute(sql, (id,))
-    row = cursor1.fetchone()
-    conn.close()
-    if row:
-      aux = maestro.Maestro(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],carreraName(row[8]))
-      return aux
-    else:
-      return None
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+--
+-- Dumping data for table `carreras`
+--
 
-def getCountTeacher():
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select auto_increment from information_schema.tables where table_name = \'maestros\' and table_schema = \'controlescolar\';'
-    cursor1.execute(sql)
-    total = cursor1.fetchone()
-    conn.close()
-    return total[0]
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+LOCK TABLES `carreras` WRITE;
+/*!40000 ALTER TABLE `carreras` DISABLE KEYS */;
+INSERT INTO `carreras` VALUES
+(1,'Ingenieria en informatica',8);
+/*!40000 ALTER TABLE `carreras` ENABLE KEYS */;
+UNLOCK TABLES;
 
-def checkTeacher(id):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'select * from maestros where id = %s;'
-    cursor1.execute(sql,(id,))
-    row = cursor1.fetchone()
-    conn.close()
-    return bool(row)
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+--
+-- Table structure for table `grupos`
+--
 
-def updateTeacher(teacher, idCarrera):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'update maestros set nombre = %s, apellidoPaterno = %s, apellidoMaterno = %s, mail = %s, idCarrera = %s, fechaNacimiento = str_to_date(%s, \'%m/'+'%'+'d/%y\'), gradoEstudios = %s where id = %s;'
-    cursor1.execute(sql,(teacher.getNombre(),teacher.getAPaterno(), teacher.getAMaterno(), teacher.getMail(), idCarrera, teacher.getFecha(), teacher.getEstudios(), teacher.getId()))
-    conn.commit()
-    conn.close()
-    return True
-  except Exception as e:
-    messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
-    return False
-  
-def createTeacher(teacher, password, idCarrera):
-  if passwordCheck(password):
-    try:
-      conn = open()
-      cursor1 = conn.cursor()
-      sql = 'insert into maestros(nombre, apellidoPaterno, apellidoMaterno, fechaNacimiento, gradoEstudios, mail, password, idCarrera) values(%s,%s,%s,str_to_date(%s, \'%m/'+'%'+'d/%y\'),%s,%s,%s,%s);'
-      cursor1.execute(sql,(teacher.getNombre(),teacher.getAPaterno(), teacher.getAMaterno(), teacher.getFecha(), teacher.getEstudios(), teacher.getMail(), hashPassword(password), idCarrera))
-      conn.commit()
-      conn.close()
-      return True
-    except Exception as e:
-      messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
-      return False
-  else:
-    messagebox.showerror('Contrasena no valida', 'Porfavor introduzca un contrasena que cumpla con:\n-Minimo 6 caracteres\n-Minimo una mayuscula\n-Minimo un numero\n-Minimo un simbolo especial')
-  
-def deleteTeacher(id):
-  try:
-    conn = open()
-    cursor1 = conn.cursor()
-    sql = 'delete from maestros where id = %s;'
-    cursor1.execute(sql,(id,))
-    conn.commit()
-    conn.close()
-    messagebox.showinfo('Maestro eliminado', f'El maestro con el id {id} ha sido eliminado de la base de datos')
-  except Exception as e:
-    messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+DROP TABLE IF EXISTS `grupos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `grupos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) DEFAULT NULL,
+  `fechaInicio` date DEFAULT NULL,
+  `fechaFin` date DEFAULT NULL,
+  `maxNumeroAlumnos` int(11) DEFAULT NULL,
+  `semestre` varchar(10) DEFAULT NULL,
+  `idCarrera` int(11) DEFAULT NULL,
+  `idMaestro` int(11) DEFAULT NULL,
+  `idMateria` int(11) DEFAULT NULL,
+  `idHorario` int(11) DEFAULT NULL,
+  `idSalon` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idCarrera` (`idCarrera`),
+  KEY `idMaestro` (`idMaestro`),
+  KEY `idMateria` (`idMateria`),
+  KEY `fkHorario` (`idHorario`),
+  KEY `fkSalon` (`idSalon`),
+  CONSTRAINT `fkHorario` FOREIGN KEY (`idHorario`) REFERENCES `horarios` (`id`),
+  CONSTRAINT `fkSalon` FOREIGN KEY (`idSalon`) REFERENCES `salones` (`id`),
+  CONSTRAINT `grupos_ibfk_1` FOREIGN KEY (`idCarrera`) REFERENCES `carreras` (`id`),
+  CONSTRAINT `grupos_ibfk_2` FOREIGN KEY (`idMaestro`) REFERENCES `maestros` (`id`),
+  CONSTRAINT `grupos_ibfk_3` FOREIGN KEY (`idMateria`) REFERENCES `materias` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `grupos`
+--
+
+LOCK TABLES `grupos` WRITE;
+/*!40000 ALTER TABLE `grupos` DISABLE KEYS */;
+/*!40000 ALTER TABLE `grupos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `horarios`
+--
+
+DROP TABLE IF EXISTS `horarios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `horarios` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `turno` varchar(50) DEFAULT NULL,
+  `hora` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `horarios`
+--
+
+LOCK TABLES `horarios` WRITE;
+/*!40000 ALTER TABLE `horarios` DISABLE KEYS */;
+/*!40000 ALTER TABLE `horarios` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `maestros`
+--
+
+DROP TABLE IF EXISTS `maestros`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `maestros` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  `apellidoPaterno` varchar(100) DEFAULT NULL,
+  `apellidoMaterno` varchar(100) DEFAULT NULL,
+  `fechaNacimiento` date DEFAULT NULL,
+  `gradoEstudios` varchar(100) DEFAULT NULL,
+  `mail` varchar(100) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `idCarrera` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idCarrera` (`idCarrera`),
+  CONSTRAINT `maestros_ibfk_1` FOREIGN KEY (`idCarrera`) REFERENCES `carreras` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `maestros`
+--
+
+LOCK TABLES `maestros` WRITE;
+/*!40000 ALTER TABLE `maestros` DISABLE KEYS */;
+INSERT INTO `maestros` VALUES
+(1,'Angel','Chavarin','Lopez','1997-11-28','Doctorado','joseC@udeg.com','$2b$12$SYouTyXLI2DOyKVxrFCBW.qUnXR8s6Et8qp4IcXf6Qe56WJ07fF.O',1);
+/*!40000 ALTER TABLE `maestros` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `maestrosmaterias`
+--
+
+DROP TABLE IF EXISTS `maestrosmaterias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `maestrosmaterias` (
+  `idMaestros` int(11) NOT NULL,
+  `idMaterias` int(11) NOT NULL,
+  PRIMARY KEY (`idMaestros`,`idMaterias`),
+  KEY `idMaterias` (`idMaterias`),
+  CONSTRAINT `maestrosmaterias_ibfk_1` FOREIGN KEY (`idMaestros`) REFERENCES `maestros` (`id`),
+  CONSTRAINT `maestrosmaterias_ibfk_2` FOREIGN KEY (`idMaterias`) REFERENCES `materias` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `maestrosmaterias`
+--
+
+LOCK TABLES `maestrosmaterias` WRITE;
+/*!40000 ALTER TABLE `maestrosmaterias` DISABLE KEYS */;
+/*!40000 ALTER TABLE `maestrosmaterias` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `materias`
+--
+
+DROP TABLE IF EXISTS `materias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `materias` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `idCarrera` int(11) DEFAULT NULL,
+  `asignatura` varchar(100) DEFAULT NULL,
+  `creditos` int(11) DEFAULT NULL,
+  `semestre` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idCarrera` (`idCarrera`),
+  CONSTRAINT `materias_ibfk_1` FOREIGN KEY (`idCarrera`) REFERENCES `carreras` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `materias`
+--
+
+LOCK TABLES `materias` WRITE;
+/*!40000 ALTER TABLE `materias` DISABLE KEYS */;
+/*!40000 ALTER TABLE `materias` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `salones`
+--
+
+DROP TABLE IF EXISTS `salones`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `salones` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) DEFAULT NULL,
+  `edificio` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `salones`
+--
+
+LOCK TABLES `salones` WRITE;
+/*!40000 ALTER TABLE `salones` DISABLE KEYS */;
+/*!40000 ALTER TABLE `salones` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
+
+-- Dump completed on 2024-11-11 21:25:21
