@@ -15,7 +15,7 @@ def FrameMaestros(nb):
 
   carrerasI, carrerasN = database.carreraList()
 
-  labelBusqueda = ttk.Label(frameMaestros, text='Ingrese el ID de alumno:')
+  labelBusqueda = ttk.Label(frameMaestros, text='Ingrese el ID de maestro:')
   labelID = ttk.Label(frameMaestros, text='ID:')
   labelNombre = ttk.Label(frameMaestros, text='Nombre:')
   labelPaterno = ttk.Label(frameMaestros, text='A. Paterno:')

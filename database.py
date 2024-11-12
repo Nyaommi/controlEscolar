@@ -3,6 +3,7 @@ import bcrypt
 import clases.administrador as administrador
 import clases.alumno as alumno
 import clases.maestro as maestro
+import clases.materia as materia
 from tkinter import messagebox
 import re
 
@@ -28,7 +29,7 @@ def verifyPassword(password, hashedPassword):
   return bcrypt.checkpw(password, hashedPassword)
 
 def open():
-  conn = mysql.connector.connect(host = host, user = user, passwd = password, database = database)
+  conn = mysql.connector.connect(host = host, user = user, passwd = password, database = database, charset='utf8mb4', collation='utf8mb4_unicode_ci')
   return conn
 
 def close():
@@ -76,9 +77,8 @@ def carreraList():
     carrerasN = [carrera[1] for carrera in carreras]
     carrerasI = [carrera[0] for carrera in carreras]
     return carrerasI, carrerasN
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
-
+  except Exception as e:
+      messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
 #- Admin Function -
   
 def searchAdmin(id):
@@ -244,7 +244,7 @@ def deleteStudent(id):
   except Exception as e:
     messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
 
-#- Teachers Functions -\
+#- Teachers Functions -
 def searchTeacher(id):
   try:
     conn = open()
@@ -325,3 +325,20 @@ def deleteTeacher(id):
     messagebox.showinfo('Maestro eliminado', f'El maestro con el id {id} ha sido eliminado de la base de datos')
   except Exception as e:
     messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+
+#- Clases Functions -
+def searchClass(id):
+  try:
+    conn = open()
+    cursor1 = conn.cursor()
+    sql = 'select * from materias where id = %s;'
+    cursor1.execute(sql, (id,))
+    row = cursor1.fetchone()
+    conn.close()
+    if row:
+      aux = materia.Materia(row[0],carreraName(row[1]),row[2],row[3],row[4])
+      return aux
+    else:
+      return None
+  except:
+    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')

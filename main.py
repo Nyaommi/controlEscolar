@@ -8,6 +8,7 @@ import clases.administrador as administrador
 import frames.coordinador.frameCoordinadores as FCC
 import frames.coordinador.frameAlumnos as FCA
 import frames.coordinador.frameMaestros as FCM
+import frames.coordinador.frameMaterias as FCMa
 
 class App(tk.Tk):
   def __init__(self):
@@ -15,7 +16,7 @@ class App(tk.Tk):
     self.title('Login')
     self.geometry('500x350')
     self.currentUser = None
-    self.menuAdmin()
+    self.menuLogin()
 
   def menuLogin(self):
     for widget in self.winfo_children():
@@ -65,7 +66,6 @@ class App(tk.Tk):
       elif response == False:
         messagebox.showerror('Password incorrecto', 'El password introducido es incorrecto')
       elif response == True:
-        print(userType)
         if userType == 'administradores':
           self.menuAdmin()
         elif userType == 'alumnos':
@@ -83,7 +83,7 @@ class App(tk.Tk):
     frameCoordinadores = FCC.FrameCoordinador(nb)
     frameAlumnos = FCA.FrameAlumnos(nb)
     frameMaestros = FCM.FrameMaestros(nb)
-    frameMaterias = ttk.Frame(nb)
+    frameMaterias = FCMa.FrameMaterias(nb)
     frameGrupos = ttk.Frame(nb)
     frameHorarios = ttk.Frame(nb)
     frameSalones = ttk.Frame(nb)
