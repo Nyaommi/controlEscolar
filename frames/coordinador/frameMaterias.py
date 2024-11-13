@@ -2,9 +2,6 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-from tkcalendar import DateEntry
-from datetime import date
-from datetime import datetime
 import database
 import clases.materia as materia
 
@@ -67,17 +64,69 @@ def FrameMaterias(nb):
       buttonEditar.config(state=NORMAL)
 
   def nuevo():
-    #entryID.config(state=NORMAL)
-    #entryID.delete(0, tk.END)
-    #entryID.insert(0, str(database.getCountMaterias()))
-    #entryID.config(state='readonly')
-    pass
+    entryID.config(state=NORMAL)
+    entryID.delete(0, tk.END)
+    entryID.insert(0, str(database.getCountMaterias()))
+    entryID.config(state='readonly')
+    entryAsignatura.config(state=NORMAL)
+    entryAsignatura.delete(0, tk.END)
+    entryCreditos.config(state=NORMAL)
+    entryCreditos.delete(0, tk.END)
+    entrySemestre.config(state=NORMAL)
+    entrySemestre.delete(0, tk.END)
+    entryCarrera.config(state=NORMAL)
+    entryCarrera.set(carrerasN[0])
+    entryCarrera.config(state='readonly')
+
+    buttonNuevo.config(state='disabled')
+    buttonGuardar.config(state=NORMAL)
+    buttonCancelar.config(state=NORMAL)
+    buttonEditar.config(state='disabled')
   
   def guardar():
-    pass
+    if database.checkClass(entryID.get()):
+      if all (field != '' for field in (entryAsignatura.get(), entryCreditos.get(), entrySemestre.get(), entryCarrera.get())):
+        clas = materia.materia(entryID.get(), entryCarrera.get(), entryAsignatura.get(), entryCreditos.get(), entrySemestre.get())
+        if database.updateClass(clas, carrerasI[entryCarrera['values'].index(entryCarrera.get())]):
+          messagebox.showinfo('Materia actualizada', f'Los datos de la materia con el ID: {clas.getId()} han sido actualizados')
+          cancelar()
+        else:
+          print('Error')
+      else:
+        messagebox.showwarning('Campos incompletos', 'Por favor llene todos los campos')
+    else:
+      if all (field != '' for field in (entryAsignatura.get(), entryCreditos.get(), entrySemestre.get(), entryCarrera.get())):
+        clas = materia.Materia(entryID.get(), entryCarrera.get(), entryAsignatura.get(), entryCreditos.get(), entrySemestre.get())
+        if database.createClass(clas, carrerasI[entryCarrera['values'].index(entryCarrera.get())]):
+          messagebox.showinfo('Materia registrada', f'Se ha registrado {clas.getAsignatura()} con el ID: {clas.getId()}')
+          cancelar()
+        else:
+          print('Error')
+      else:
+        messagebox.showwarning('Campos incompletos', 'Por favor llene todos los campos')
+
   
   def cancelar():
-    pass
+    entryID.config(state=NORMAL)
+    entryID.delete(0, tk.END)
+    entryID.config(state='readonly')
+    entryAsignatura.config(state=NORMAL)
+    entryAsignatura.delete(0, tk.END)
+    entryAsignatura.config(state='readonly')
+    entryCreditos.config(state=NORMAL)
+    entryCreditos.delete(0, tk.END)
+    entryCreditos.config(state='readonly')
+    entrySemestre.config(state=NORMAL)
+    entrySemestre.delete(0, tk.END)
+    entrySemestre.config(state='readonly')
+    entryCarrera.config(state=NORMAL)
+    entryCarrera.set(carrerasN[0])
+    entryCarrera.config(state=DISABLED)
+
+    buttonNuevo.config(state=NORMAL)
+    buttonGuardar.config(state='disabled')
+    buttonCancelar.config(state='disabled')
+    buttonEditar.config(state='disabled')
   
   labelBusqueda.grid(row=0, column=1, sticky=E)
   entryBusqueda.grid(row=0, column=2, sticky=W+E)

@@ -16,7 +16,7 @@ class App(tk.Tk):
     self.title('Login')
     self.geometry('500x350')
     self.currentUser = None
-    self.menuLogin()
+    self.menuAdmin()
 
   def menuLogin(self):
     for widget in self.winfo_children():
@@ -25,19 +25,6 @@ class App(tk.Tk):
 
     self.grid_rowconfigure((0,1,2,3, 4), weight=1)
     self.grid_columnconfigure((0,1,2), weight=1)
-
-    frameRadio = tk.Frame(self)
-    frameRadio.config(relief="groove")
-    frameRadio.config(bd=5)
-    frameRadio.grid(row=3, column=1)
-    userType = tk.StringVar()
-
-    radioAdmin = tk.Radiobutton(frameRadio, text="Coordinador", variable=userType, value='administradores')
-    radioAdmin.pack(side="left", padx=3)
-    radioStudent = tk.Radiobutton(frameRadio, text="Alumno", variable=userType, value='alumnos')
-    radioStudent.pack(side="left", padx=3)
-    radioTeacher = tk.Radiobutton(frameRadio, text="Maestro", variable=userType, value='maestros')
-    radioTeacher.pack(side="left", padx=3)
 
     lbUser = ttk.Label(self, text='Email:')
     lbPassword = ttk.Label(self, text='Password:')
@@ -53,25 +40,22 @@ class App(tk.Tk):
     entryUser.grid(row=1, column=1, padx=(60, 0), sticky=W+E)
     entryPassword.grid(row=2, column=1, padx=(60,0), sticky=W+E)
 
-    buttonLogin = ttk.Button(self, text='Login', command=lambda: self.login(userType.get(), entryUser.get(), entryPassword.get()))
+    buttonLogin = ttk.Button(self, text='Login', command=lambda: self.login(entryUser.get(), entryPassword.get()))
     buttonLogin.grid(row=4, column=1, padx=5, pady=5)
 
-  def login(self, userType, mail, password):
-    if userType == '':
-      messagebox.showwarning('Error de login', 'Por favor selecciones que tipo de usuario es')
-    else:
-      response = database.login(userType, mail, password)
-      if response == 'noUser':
-        messagebox.showerror('Usuario inexistente','Parece que no existe el mail ingresado')
-      elif response == False:
-        messagebox.showerror('Password incorrecto', 'El password introducido es incorrecto')
-      elif response == True:
-        if userType == 'administradores':
-          self.menuAdmin()
-        elif userType == 'alumnos':
-          pass
-        elif userType == 'maestros':
-          pass
+  def login(self, mail, password):
+    response, userType = database.login(mail, password)
+    if response == 'noUser':
+      messagebox.showerror('Usuario inexistente','Parece que no existe el mail ingresado')
+    elif response == False:
+      messagebox.showerror('Password incorrecto', 'El password introducido es incorrecto')
+    elif response == True:
+      if userType == 'administradores':
+        self.menuAdmin()
+      elif userType == 'alumnos':
+        print('alumnos')
+      elif userType == 'maestros':
+        print('maestros')
   def menuAdmin(self):
     for widget in self.winfo_children():
       widget.destroy()

@@ -139,7 +139,6 @@ def FrameMaestros(nb):
           cancelar()
         else:
           print('Error')
-        
       else:
         messagebox.showwarning('Campos incompletos', 'Por favor llene todos los campos')
 

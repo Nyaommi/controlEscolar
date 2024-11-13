@@ -36,23 +36,61 @@ def close():
   conn = open()
   conn.close()
 
-def login(userType, mail, password):
+def login(mail, password):
+  users = ['administradores', 'alumnos', 'maestros']
+  userType = ''
+  row = None
   try:
     conn = open()
     cursor1 = conn.cursor()
-    sql = 'select * from '+userType+' where mail = %s;'
-    cursor1.execute(sql, (mail,))
+    for user in users:
+      userType = user
+      sql = 'select password from '+user+' where mail = %s;'
+      cursor1.execute(sql, (mail,))
+      row = cursor1.fetchone()
+      if row:
+        if verifyPassword(password, row[0]):
+          return True, userType
+          conn.close()
+        else:
+          return False, None
+          conn.close()
+    conn.close()
+    return 'noUser', None
+  except:
+    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+    return None, None
+  
+def mailCheck(mail):
+  users = ['administradores', 'alumnos', 'maestros']
+  try:
+    for user in users:
+      conn = open()
+      cursor1 = conn.cursor()
+      sql = 'select mail from '+user+' where mail = %s;'
+      cursor1.execute(sql, (mail,))
+      row = cursor1.fetchone()
+      conn.close()
+      if row:
+        return True
+    return False
+  except Exception as e:
+    messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+
+def classCheck(asignatura):
+  try:
+    conn = open()
+    cursor1 = conn.cursor()
+    sql = 'select * from materias where asignatura = %s;'
+    cursor1.execute(sql, (asignatura,))
     row = cursor1.fetchone()
     conn.close()
     if row:
-      if verifyPassword(password, row[2]):
-        return True
-      else:
-        return False
-    else:
-      return('noUser')
-  except:
-    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+      return True
+    return False
+  except Exception as e:
+    messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+
 
 def carreraName(id):
   try:
@@ -79,6 +117,21 @@ def carreraList():
     return carrerasI, carrerasN
   except Exception as e:
       messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+
+def materiaList(idCarrera):
+  try:
+    conn = open()
+    cursor1 = conn.cursor()
+    sql = 'select id, asignatura from materias where idCarrera = %s;'
+    cursor1.execute(sql, (idCarrera,))
+    materias = cursor1.fetchall()
+    conn.close()
+    materiasN = [materia[1] for materia in materias]
+    materiasI = [materia[0] for materia in materias]
+    return materiasI, materiasN
+  except Exception as e:
+      messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+
 #- Admin Function -
   
 def searchAdmin(id):
@@ -135,21 +188,24 @@ def updateAdmin(admin):
     return False
   
 def createAdmin(admin):
-  if passwordCheck(admin.getPassword()):
-    try:
-      conn = open()
-      cursor1 = conn.cursor()
-      sql = 'insert into administradores(usuario, password, nombre, apellidoPaterno, apellidoMaterno, mail) values(%s,%s,%s,%s,%s,%s);'
-      cursor1.execute(sql,(admin.getUsuario(),hashPassword(admin.getPassword()),admin.getNombre(),admin.getAPaterno(), admin.getAMaterno(), admin.getMail()))
-      conn.commit()
-      conn.close()
-      return True
-    except Exception as e:
-      messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
-      return False
+  if not mailCheck(admin.getMail()):
+    if passwordCheck(admin.getPassword()):
+      try:
+        conn = open()
+        cursor1 = conn.cursor()
+        sql = 'insert into administradores(usuario, password, nombre, apellidoPaterno, apellidoMaterno, mail) values(%s,%s,%s,%s,%s,%s);'
+        cursor1.execute(sql,(admin.getUsuario(),hashPassword(admin.getPassword()),admin.getNombre(),admin.getAPaterno(), admin.getAMaterno(), admin.getMail()))
+        conn.commit()
+        conn.close()
+        return True
+      except Exception as e:
+        messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+        return False
+    else:
+      messagebox.showerror('Contrasena no valida', 'Porfavor introduzca un contrasena que cumpla con:\n-Minimo 6 caracteres\n-Minimo una mayuscula\n-Minimo un numero\n-Minimo un simbolo especial')
   else:
-    messagebox.showerror('Contrasena no valida', 'Porfavor introduzca un contrasena que cumpla con:\n-Minimo 6 caracteres\n-Minimo una mayuscula\n-Minimo un numero\n-Minimo un simbolo especial')
-  
+    messagebox.showerror('Usuario ya existente', 'El mail ya esta registrado en nuestra base de datos')
+
 def deleteAdmin(id):
   try:
     conn = open()
@@ -217,21 +273,24 @@ def updateStudent(student, idCarrera):
     return False
   
 def createStudent(student, password, idCarrera):
-  if passwordCheck(password):
-    try:
-      conn = open()
-      cursor1 = conn.cursor()
-      sql = 'insert into alumnos(nombre, apellidoPaterno, apellidoMaterno, mail, password, idCarrera, fechaNacimiento, estado) values(%s,%s,%s,%s,%s,%s,str_to_date(%s, \'%m/'+'%'+'d/%y\'),%s);'
-      cursor1.execute(sql,(student.getNombre(),student.getAPaterno(), student.getAMaterno(), student.getMail(), hashPassword(password), idCarrera, student.getFechaNacimiento(), student.getEstado()))
-      conn.commit()
-      conn.close()
-      return True
-    except Exception as e:
-      messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
-      return False
+  if not mailCheck(student.getMail()):
+    if passwordCheck(password):
+      try:
+        conn = open()
+        cursor1 = conn.cursor()
+        sql = 'insert into alumnos(nombre, apellidoPaterno, apellidoMaterno, mail, password, idCarrera, fechaNacimiento, estado) values(%s,%s,%s,%s,%s,%s,str_to_date(%s, \'%m/'+'%'+'d/%y\'),%s);'
+        cursor1.execute(sql,(student.getNombre(),student.getAPaterno(), student.getAMaterno(), student.getMail(), hashPassword(password), idCarrera, student.getFechaNacimiento(), student.getEstado()))
+        conn.commit()
+        conn.close()
+        return True
+      except Exception as e:
+        messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+        return False
+    else:
+      messagebox.showerror('Contrasena no valida', 'Porfavor introduzca un contrasena que cumpla con:\n-Minimo 6 caracteres\n-Minimo una mayuscula\n-Minimo un numero\n-Minimo un simbolo especial')
   else:
-    messagebox.showerror('Contrasena no valida', 'Porfavor introduzca un contrasena que cumpla con:\n-Minimo 6 caracteres\n-Minimo una mayuscula\n-Minimo un numero\n-Minimo un simbolo especial')
-  
+    messagebox.showerror('Usuario ya existente', 'El mail ya esta registrado en nuestra base de datos')
+
 def deleteStudent(id):
   try:
     conn = open()
@@ -299,21 +358,24 @@ def updateTeacher(teacher, idCarrera):
     return False
   
 def createTeacher(teacher, password, idCarrera):
-  if passwordCheck(password):
-    try:
-      conn = open()
-      cursor1 = conn.cursor()
-      sql = 'insert into maestros(nombre, apellidoPaterno, apellidoMaterno, fechaNacimiento, gradoEstudios, mail, password, idCarrera) values(%s,%s,%s,str_to_date(%s, \'%m/'+'%'+'d/%y\'),%s,%s,%s,%s);'
-      cursor1.execute(sql,(teacher.getNombre(),teacher.getAPaterno(), teacher.getAMaterno(), teacher.getFecha(), teacher.getEstudios(), teacher.getMail(), hashPassword(password), idCarrera))
-      conn.commit()
-      conn.close()
-      return True
-    except Exception as e:
-      messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
-      return False
+  if not mailCheck(teacher.getMail()):
+    if passwordCheck(password):
+      try:
+        conn = open()
+        cursor1 = conn.cursor()
+        sql = 'insert into maestros(nombre, apellidoPaterno, apellidoMaterno, fechaNacimiento, gradoEstudios, mail, password, idCarrera) values(%s,%s,%s,str_to_date(%s, \'%m/'+'%'+'d/%y\'),%s,%s,%s,%s);'
+        cursor1.execute(sql,(teacher.getNombre(),teacher.getAPaterno(), teacher.getAMaterno(), teacher.getFecha(), teacher.getEstudios(), teacher.getMail(), hashPassword(password), idCarrera))
+        conn.commit()
+        conn.close()
+        return True
+      except Exception as e:
+        messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+        return False
+    else:
+      messagebox.showerror('Contrasena no valida', 'Porfavor introduzca un contrasena que cumpla con:\n-Minimo 6 caracteres\n-Minimo una mayuscula\n-Minimo un numero\n-Minimo un simbolo especial')
   else:
-    messagebox.showerror('Contrasena no valida', 'Porfavor introduzca un contrasena que cumpla con:\n-Minimo 6 caracteres\n-Minimo una mayuscula\n-Minimo un numero\n-Minimo un simbolo especial')
-  
+    messagebox.showerror('Usuario ya existente', 'El mail ya esta registrado en nuestra base de datos')
+
 def deleteTeacher(id):
   try:
     conn = open()
@@ -342,3 +404,56 @@ def searchClass(id):
       return None
   except:
     messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+
+def getCountMaterias():
+  try:
+    conn = open()
+    cursor1 = conn.cursor()
+    sql = 'select auto_increment from information_schema.tables where table_name = \'materias\' and table_schema = \'controlescolar\';'
+    cursor1.execute(sql)
+    total = cursor1.fetchone()
+    conn.close()
+    return total[0]
+  except:
+    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+
+def checkClass(id):
+  try:
+    conn = open()
+    cursor1 = conn.cursor()
+    sql = 'select * from materias where id = %s;'
+    cursor1.execute(sql,(id,))
+    row = cursor1.fetchone()
+    conn.close()
+    return bool(row)
+  except:
+    messagebox.showerror('Error con la base de datos', 'Parece que tenemos problemas para comunicarnos con la base de datos')
+
+def updateClass(clas, idCarrera):
+  try:
+    conn = open()
+    cursor1 = conn.cursor()
+    sql = 'update materias set idCarrera = %s, asignatura = %s, creditos = %s, semestres = %s where id = %s;'
+    cursor1.execute(sql,(idCarrera, clas.getAsignatura(), clas.getCreditos(), clas.getSemestres(), clas.getId()))
+    conn.commit()
+    conn.close()
+    return True
+  except Exception as e:
+    messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+    return False
+  
+def createClass(clas, idCarrera):
+  if not classCheck(clas.getAsignatura()):
+    try:
+      conn = open()
+      cursor1 = conn.cursor()
+      sql = 'insert into materias(idCarrera, asignatura, creditos, semestres) values(%s,%s,%s,%s);'
+      cursor1.execute(sql,(idCarrera, clas.getAsignatura(), clas.getCreditos(), clas.getSemestres()))
+      conn.commit()
+      conn.close()
+      return True
+    except Exception as e:
+      messagebox.showerror('Error con la base de datos', f'Parece que tenemos problemas para comunicarnos con la base de datos: {e}')
+      return False
+  else:
+    messagebox.showerror('La materia ya existe', 'La materia ya esta en nuestra base de datos')
