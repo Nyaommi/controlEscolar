@@ -9,6 +9,7 @@ import frames.coordinador.frameCoordinadores as FCC
 import frames.coordinador.frameAlumnos as FCA
 import frames.coordinador.frameMaestros as FCM
 import frames.coordinador.frameMaterias as FCMa
+import frames.coordinador.frameGrupos as FCG
 
 class App(tk.Tk):
   def __init__(self):
@@ -68,7 +69,7 @@ class App(tk.Tk):
     frameAlumnos = FCA.FrameAlumnos(nb)
     frameMaestros = FCM.FrameMaestros(nb)
     frameMaterias = FCMa.FrameMaterias(nb)
-    frameGrupos = ttk.Frame(nb)
+    frameGrupos = FCG.FrameGrupos(nb)
     frameHorarios = ttk.Frame(nb)
     frameSalones = ttk.Frame(nb)
     frameCarreras = ttk.Frame(nb)

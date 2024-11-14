@@ -9,10 +9,11 @@ import database
 
 def FrameGrupos(nb):
   frameGrupos = ttk.Frame(nb)
-  frameGrupos.grid_rowconfigure((0,1,2,3,4,5,6), weight=1)
+  frameGrupos.grid_rowconfigure((0,1,2,3,4,5,6,7), weight=1)
   frameGrupos.grid_columnconfigure((0,1,2,3,4), weight=1)
 
   carrerasI, carrerasN = database.carreraList()
+  salonI, salonN = database.salonList()
 
   labelBusqueda = ttk.Label(frameGrupos, text='Ingrese el ID de grupo:')
   labelID = ttk.Label(frameGrupos, text='ID:')
@@ -24,7 +25,7 @@ def FrameGrupos(nb):
   labelSalon = ttk.Label(frameGrupos, text='Salon:')
   labelHorario = ttk.Label(frameGrupos, text='Horario')
   labelSemestre = ttk.Label(frameGrupos, text='Semestre:')
-  labelAlumnos = ttk.Label(frameGrupos, text='Max. num. alumnos:')
+  labelAlumno = ttk.Label(frameGrupos, text='Max. num. alumnos:')
 
   entryBusqueda = ttk.Entry(frameGrupos, width=20)
   entryID = ttk.Entry(frameGrupos, state='readonly')
@@ -33,10 +34,55 @@ def FrameGrupos(nb):
   entryCarrera = ttk.Combobox(frameGrupos, values=carrerasN, state=DISABLED)
   entryMateria = ttk.Combobox(frameGrupos, state=DISABLED)
   entryMaestro = ttk.Combobox(frameGrupos, state=DISABLED)
-  entrySalon = ttk.Combobox(frameGrupos, state=DISABLED)
+  entrySalon = ttk.Combobox(frameGrupos, values=salonN, state=DISABLED)
   entryHorario = ttk.Combobox(frameGrupos, state=DISABLED)
   entrySemestre = ttk.Entry(frameGrupos, state='readonly')
-  entryAlumno =ttk.Entry(frameGrupos, state='readonly', show='*')
+  entryAlumno =ttk.Spinbox(frameGrupos, state='readonly', from_=10, to=50)
+
+  buttonBuscar = ttk.Button(frameGrupos, text='Buscar', command=lambda:buscar(entryBusqueda.get()))
+  buttonNuevo = ttk.Button(frameGrupos, text='Nuevo', command=lambda:nuevo())
+  buttonGuardar = ttk.Button(frameGrupos, text='Guardar', state="disabled", command=lambda:guardar())
+  buttonCancelar = ttk.Button(frameGrupos, text='Cancelar', state="disabled", command=lambda:cancelar())
+  buttonEditar = ttk.Button(frameGrupos, text='Editar', state="disabled", command=lambda:editar())
+  buttonBaja = ttk.Button(frameGrupos, text='Baja', state="disabled", command=lambda:baja())
+
+
+  def buscar(id):
+    pass
+  
+  def nuevo():
+    entryID.config(state=NORMAL)
+    entryID.delete(0, tk.END)
+    entryID.insert(0, str(database.getCountGroup()))
+    entryID.config(state='readonly')
+    entryNombre.config(state=NORMAL)
+    entryNombre.delete(0, tk.END)
+    entryFecha.config(state=NORMAL)
+    entryFecha.set_date(date.today())
+    entryFecha.config(state='readonly')
+    entryCarrera.config(state='readonly')
+    entrySalon.config(state='readonly')
+    #entryHorario.config(state=NORMAL)
+    #entryHorario.
+    entrySemestre.config(state=NORMAL)
+    entrySemestre.delete(0, tk.END)
+    entryAlumno.config(state=NORMAL)
+  
+  def guardar():
+    pass
+  
+  def cancelar():
+    pass
+  
+  def editar():
+    pass
+  
+  def baja():
+    pass
+
+  labelBusqueda.grid(row=0, column=1, sticky=E)
+  entryBusqueda.grid(row=0, column=2, sticky=W+E)
+  buttonBuscar.grid(row=0, column=3, sticky=W)
 
   labelID.grid(row=1, column=0)
   entryID.grid(row=1, column=1, sticky=W+E)
@@ -48,5 +94,23 @@ def FrameGrupos(nb):
   entryCarrera.grid(row=4, column=1, sticky=W+E)
   labelMateria.grid(row=5, column=0)
   entryMateria.grid(row=5, column=1, sticky=W+E)
+  
+  labelMaestro.grid(row=1, column=2)
+  entryMaestro.grid(row=1, column=3, sticky=W+E)
+  labelSalon.grid(row=2, column=2)
+  entrySalon.grid(row=2, column=3, sticky=W+E)
+  labelHorario.grid(row=3, column=2)
+  entryHorario.grid(row=3, column=3, sticky=W+E)
+  labelSemestre.grid(row=4, column=2)
+  entrySemestre.grid(row=4, column=3, sticky=W+E)
+  labelAlumno.grid(row=5, column=2)
+  entryAlumno.grid(row=5, column=3, sticky=W+E)
+  
+  buttonNuevo.grid(row=6, column=0)
+  buttonGuardar.grid(row=6, column=1)
+  buttonCancelar.grid(row=6, column=2)
+  buttonEditar.grid(row=6, column=3)
+  buttonBaja.grid(row=6, column=4)
 
+  return frameGrupos
   #matertiasI, materiasN = database.materiaList()
