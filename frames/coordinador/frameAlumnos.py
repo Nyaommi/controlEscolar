@@ -141,8 +141,7 @@ def FrameAlumnos(nb):
           messagebox.showinfo('Usuario registrado', f'Se ha registrado a {student.getNombre()} con el ID: {student.getId()}')
           cancelar()
         else:
-          print('Error')
-        
+          print('Error')    
       else:
         messagebox.showwarning('Campos incompletos', 'Por favor llene todos los campos')
 

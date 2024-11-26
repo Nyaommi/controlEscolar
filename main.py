@@ -10,6 +10,18 @@ import frames.coordinador.frameAlumnos as FCA
 import frames.coordinador.frameMaestros as FCM
 import frames.coordinador.frameMaterias as FCMa
 import frames.coordinador.frameGrupos as FCG
+import frames.coordinador.frameHorarios as FCH
+import frames.coordinador.frameSalon as FCS
+import frames.coordinador.frameCarrera as FCCa
+import frames.coordinador.framePlaneacion as FCP
+
+import frames.alumnos.frameDatos as FAD
+import frames.alumnos.frameAgenda as FAA
+import frames.alumnos.frameHorario as FAH
+
+import frames.maestros.frameDatos as FMD
+import frames.maestros.frameMaterias as FMM
+import frames.maestros.frameHorario as FMH
 
 class App(tk.Tk):
   def __init__(self):
@@ -17,6 +29,7 @@ class App(tk.Tk):
     self.title('Login')
     self.geometry('500x350')
     self.currentUser = None
+    #self.menuMaestro('joseC@udeg.com')
     self.menuAdmin()
 
   def menuLogin(self):
@@ -54,27 +67,24 @@ class App(tk.Tk):
       if userType == 'administradores':
         self.menuAdmin()
       elif userType == 'alumnos':
-        print('alumnos')
+        self.menuAlumno(mail)
       elif userType == 'maestros':
-        print('maestros')
+        self.menuMaestro(mail)
   def menuAdmin(self):
     for widget in self.winfo_children():
       widget.destroy()
     self.title('Control Escolar -Coordinador-')
     self.geometry('600x400')
     nb = ttk.Notebook(self)
-    nb.pack(fill='both', expand='yes')
-
     frameCoordinadores = FCC.FrameCoordinador(nb)
     frameAlumnos = FCA.FrameAlumnos(nb)
     frameMaestros = FCM.FrameMaestros(nb)
     frameMaterias = FCMa.FrameMaterias(nb)
     frameGrupos = FCG.FrameGrupos(nb)
-    frameHorarios = ttk.Frame(nb)
-    frameSalones = ttk.Frame(nb)
-    frameCarreras = ttk.Frame(nb)
-    framePlaneacion = ttk.Frame(nb)
-
+    frameHorarios = FCH.FrameHorarios(nb)
+    frameSalones = FCS.FrameSalon(nb)
+    frameCarreras = FCCa.FrameCarrera(nb)
+    framePlaneacion = FCP.FramePlaneacion(nb)
     nb.add(frameCoordinadores, text='Coordinadores')
     nb.add(frameAlumnos, text='Alumnos')
     nb.add(frameMaestros, text='Maestros')
@@ -84,7 +94,39 @@ class App(tk.Tk):
     nb.add(frameSalones, text='Salon')
     nb.add(frameCarreras, text='Carrera')
     nb.add(framePlaneacion, text='Planeacion')
+    nb.pack(fill='both', expand='yes')
     
+  def menuAlumno(self, mail):
+    for widget in self.winfo_children():
+      widget.destroy()
+    self.title('Control Escolar -Alumno-')
+    self.geometry('600x400')
+    nba = ttk.Notebook(self)
+    frameDatos = FAD.FrameDatos(nba, mail)
+    frameAgenda = FAA.FrameAgenda(nba, mail)
+    frameHorario = FAH.FrameHorario(nba, mail)
+    
+    nba.add(frameDatos, text='Datos')
+    nba.add(frameAgenda, text='Agendar Materias')
+    nba.add(frameHorario, text='Horario')
+    
+    nba.pack(fill='both', expand='yes') 
+    
+  def menuMaestro(self, mail):
+    for widget in self.winfo_children():
+      widget.destroy()
+    self.title('Control Escolar -Alumno-')
+    self.geometry('600x400')
+    nba = ttk.Notebook(self)
+    frameDatos = FMD.FrameDatos(nba, mail)
+    frameMaterias = FMM.FrameMaterias(nba, mail)
+    frameHorario = FMH.FrameHorario(nba, mail)
+    
+    nba.add(frameDatos, text='Datos')
+    nba.add(frameMaterias, text='Registrar asignaturas')
+    nba.add(frameHorario, text='Horario')
+    
+    nba.pack(fill='both', expand='yes') 
 
 
 
